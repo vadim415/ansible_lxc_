@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  vars_files:
+    - var/vars.yml
+  tasks:
+  - name: Create a started container
+    lxc_container:
+      name: "{{ container_name }}"
+      container_log: "{{ container_log }}"
+      template: "{{ template }}"
+      state: "{{ state }}"
+      template_options: "{{ template_options }}"
+      container_command: |
+       apt-get update
+       apt install openssh-server vim net-tools -y
+       mkdir /root/.ssh
+       touch /root/.ssh/authorized_keys
+       echo "{{ ssh_pub }}" >> /root/ssh/authorized_keys
+       systemctl start ssh
